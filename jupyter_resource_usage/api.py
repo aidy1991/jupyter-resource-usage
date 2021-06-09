@@ -1,4 +1,5 @@
 import json
+import os
 from concurrent.futures import ThreadPoolExecutor
 
 import psutil
@@ -41,6 +42,10 @@ class ApiHandler(APIHandler):
             )
 
         metrics = {"rss": rss, "limits": limits}
+
+        disk_path = self.get_argument("disk_path", "/")
+        disk_usage = psutil.disk_usage(disk_path)
+        metrics["disk"] = {"total": disk_usage.total, "used": disk_usage.used, "free": disk_usage.free, "percent": disk_usage.percent}
 
         # Optionally get CPU information
         if config.track_cpu_percent:
